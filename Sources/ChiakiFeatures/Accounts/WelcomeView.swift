@@ -25,7 +25,9 @@ struct WelcomeView: View {
         var choices = [
             FlowTileChoice(
                 label: .accountsWelcomePsnAccount, symbol: "person.crop.circle.badge.checkmark",
-                hint: .accountsWelcomePsnAccountHint,
+                hint: CloudBuild.included
+                    ? .accountsWelcomePsnAccountHint
+                    : .accountsWelcomePsnAccountHintWithoutCloud,
                 focus: "PSN account", prominent: true
             ) {
                 send(.chooseSignIn)

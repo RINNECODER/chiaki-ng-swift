@@ -127,7 +127,7 @@ private func marks(_ checks: CloudLaunchChecks) -> [CloudLaunchChecks.Mark] {
     #expect(marks(row) == Array(repeating: .passed, count: 5))
 }
 
-@Test func launchChecksShowMembershipAndReleaseForPSNow() throws {
+@Test(.enabled(if: PS4CloudLaunchBuild.included)) func launchChecksShowMembershipAndReleaseForPSNow() throws {
     var row = try checks(for: psNow)
     #expect(row.steps == [.membership, .release])
     #expect(row.steps.map { String(localized: $0.label) } == ["Membership", "Release"])

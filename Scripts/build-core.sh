@@ -18,6 +18,22 @@ case "${CHIAKI_PS5_CLOUD_LAUNCH:-0}" in
         exit 1
         ;;
 esac
+case "${CHIAKI_PS4_CLOUD_LAUNCH:-1}" in
+    1) ps4_cloud_launch=ON ;;
+    0) ps4_cloud_launch=OFF ;;
+    *)
+        echo 'CHIAKI_PS4_CLOUD_LAUNCH must be 1 or 0' >&2
+        exit 1
+        ;;
+esac
+case "${CHIAKI_CLOUD:-1}" in
+    1) cloud=ON ;;
+    0) cloud=OFF ;;
+    *)
+        echo 'CHIAKI_CLOUD must be 1 or 0' >&2
+        exit 1
+        ;;
+esac
 case "$platform" in
     macos)
         build_dir="$project_dir/.build/native-core"
@@ -79,6 +95,8 @@ cmake -S "$project_dir/lib" -B "$build_dir" -G Ninja \
     -DLIBCHIAKING_TAKION_VERSION_OVERRIDE="${CHIAKI_TAKION_VERSION:-0}" \
     -DLIBCHIAKING_KAKUSAN="$kakusan" \
     -DLIBCHIAKING_PS5_CLOUD_LAUNCH="$ps5_cloud_launch" \
+    -DLIBCHIAKING_PS4_CLOUD_LAUNCH="$ps4_cloud_launch" \
+    -DLIBCHIAKING_CLOUD="$cloud" \
     ${platform_options[@]+"${platform_options[@]}"}
 libraries=("$build_dir"/libChiakiRegistration.dylib "$build_dir"/libChiakiInput.dylib)
 if [[ "$platform" != macos ]]; then

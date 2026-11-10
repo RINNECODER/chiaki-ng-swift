@@ -4,7 +4,7 @@ import ComposableArchitecture
 import Foundation
 import Testing
 
-@MainActor @Test func theLibraryStartsAndStopsItsFeaturesWithTheScene() async {
+@MainActor @Test(.enabled(if: CloudBuild.included)) func theLibraryStartsAndStopsItsFeaturesWithTheScene() async {
     let account = UUID()
     let store = TestStore(initialState: LibraryFeature.State(section: .cloud)) {
         LibraryFeature()

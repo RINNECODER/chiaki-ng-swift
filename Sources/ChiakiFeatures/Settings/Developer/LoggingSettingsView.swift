@@ -178,15 +178,17 @@ public struct DeveloperSettingsView: View {
                     }
                 }
             }
-            Text(.settingsDeveloperCloudLibrary).font(.headline)
-            SettingsRow(.settingsDeveloperRefreshCooldown) {
-                Picker(selection: $store.draft.libraryRefreshCooldownMinutes) {
-                    ForEach(DeveloperSettings.libraryRefreshCooldownChoices, id: \.self) { minutes in
-                        Text(DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes))
-                            .tag(minutes)
+            if CloudBuild.included {
+                Text(.settingsDeveloperCloudLibrary).font(.headline)
+                SettingsRow(.settingsDeveloperRefreshCooldown) {
+                    Picker(selection: $store.draft.libraryRefreshCooldownMinutes) {
+                        ForEach(DeveloperSettings.libraryRefreshCooldownChoices, id: \.self) { minutes in
+                            Text(DeveloperSettings.libraryRefreshCooldownTitle(minutes: minutes))
+                                .tag(minutes)
+                        }
+                    } label: {
+                        Text(.settingsDeveloperRefreshCooldown)
                     }
-                } label: {
-                    Text(.settingsDeveloperRefreshCooldown)
                 }
             }
             SettingsPersistenceBanner(store.setting, subject: .settingsDeveloperDeveloperSubject) {

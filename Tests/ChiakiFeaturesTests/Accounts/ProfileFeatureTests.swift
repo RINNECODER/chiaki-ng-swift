@@ -41,7 +41,7 @@ private let localProfile = RegistrationFlow.Profile(
 
 @Test func onlyLocalPlayIsPermittedWithoutAPSNProfile() {
     #expect(RegistrationFlow.ProfileKind.npsso.permits(.localPlay))
-    #expect(RegistrationFlow.ProfileKind.npsso.permits(.cloud))
+    #expect(RegistrationFlow.ProfileKind.npsso.permits(.cloud) == CloudBuild.included)
     #expect(RegistrationFlow.ProfileKind.npsso.permits(.psnConsoles))
     #expect(RegistrationFlow.ProfileKind.accountID.permits(.localPlay))
     #expect(!RegistrationFlow.ProfileKind.accountID.permits(.cloud))
@@ -53,10 +53,20 @@ private let localProfile = RegistrationFlow.Profile(
 
 @MainActor @Test func gatePassesEntryActionsForAPSNProfile() async {
     let store = TestStore(initialState: ProfileFeatureProbe.State(profile: psnProfile)) {
-        ProfileFeatureProbe().requires(.cloud, of: \.profile, entering: \.enter, otherwise: .stop)
+        ProfileFeatureProbe().requires(.psnConsoles, of: \.profile, entering: \.enter, otherwise: .stop)
     }
     await store.send(.enter) {
         $0.entered = 1
+    }
+}
+
+@MainActor @Test(.enabled(if: !CloudBuild.included)) func gateDropsCloudEntryActionsWithoutTheCloudBuild() async {
+    let store = TestStore(initialState: ProfileFeatureProbe.State(profile: psnProfile)) {
+        ProfileFeatureProbe().requires(.cloud, of: \.profile, entering: \.enter, otherwise: .stop)
+    }
+    await store.send(.enter)
+    await store.receive(.stop) {
+        $0.stopped = 1
     }
 }
 

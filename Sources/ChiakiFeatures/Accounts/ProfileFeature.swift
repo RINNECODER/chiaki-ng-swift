@@ -15,10 +15,14 @@ public enum ProfileFeature: Hashable, Sendable {
 }
 
 extension RegistrationFlow.ProfileKind {
-    /// Whether profiles of this kind can use `feature`; web sign-in profiles can use everything and
-    /// account id profiles only local play.
+    /// Whether profiles of this kind can use `feature`; web sign-in profiles can use everything this build has
+    /// and account id profiles only local play. Without `CloudBuild.included` no profile can use cloud
+    /// streaming.
     public func permits(_ feature: ProfileFeature) -> Bool {
-        switch self {
+        guard feature != .cloud || CloudBuild.included else {
+            return false
+        }
+        return switch self {
         case .npsso:
             true
         case .accountID:

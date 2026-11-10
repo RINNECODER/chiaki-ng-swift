@@ -184,9 +184,11 @@ final class ChiakiApplicationDelegate: NSObject {
             Task.detached(priority: .background) {
                 RetiredCoverStore.remove()
             }
-            Task.detached(priority: .utility) {
-                @Dependency(\.streamSession) var captures
-                await captures.resumeCaptures()
+            if CloudBuild.included {
+                Task.detached(priority: .utility) {
+                    @Dependency(\.streamSession) var captures
+                    await captures.resumeCaptures()
+                }
             }
         }
 
@@ -235,9 +237,11 @@ final class ChiakiApplicationDelegate: NSObject {
             Task.detached(priority: .background) {
                 RetiredCoverStore.remove()
             }
-            Task.detached(priority: .utility) {
-                @Dependency(\.streamSession) var captures
-                await captures.resumeCaptures()
+            if CloudBuild.included {
+                Task.detached(priority: .utility) {
+                    @Dependency(\.streamSession) var captures
+                    await captures.resumeCaptures()
+                }
             }
             return true
         }
@@ -289,9 +293,11 @@ enum DiagnosticRun: Equatable {
     case registration
     /// `--diagnose-playback`: streams the saved console and reports the frames.
     case playback
-    /// `--diagnose-account`: renews the saved account and fetches its cloud catalog.
+    /// `--diagnose-account`: renews the saved account and fetches its cloud catalog; only in builds with
+    /// `CloudBuild.included`.
     case account
-    /// `--diagnose-cloud-catalog`: reports on the first saved account's cloud catalog.
+    /// `--diagnose-cloud-catalog`: reports on the first saved account's cloud catalog; only in builds with
+    /// `CloudBuild.included`.
     case cloudCatalog
     /// `--diagnose-invitations`: lists each saved account's game invitations.
     case invitations
@@ -313,9 +319,9 @@ enum DiagnosticRun: Equatable {
             self = .registration
         case "--diagnose-playback":
             self = .playback
-        case "--diagnose-account":
+        case "--diagnose-account" where CloudBuild.included:
             self = .account
-        case "--diagnose-cloud-catalog":
+        case "--diagnose-cloud-catalog" where CloudBuild.included:
             self = .cloudCatalog
         case "--diagnose-invitations":
             self = .invitations

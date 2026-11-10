@@ -167,7 +167,7 @@ public struct RootFeature {
         /// Whether any saved account is signed in to PlayStation Network.
         public var psnReach: PSNReach {
             profiles.contains { profile in
-                profile.kind.permits(.cloud)
+                profile.kind.permits(.psnConsoles)
             }
                 ? .signedIn
                 : .localOnly
@@ -409,7 +409,7 @@ public struct RootFeature {
     /// - Parameter state: The application's state.
     /// - Returns: The profile, or `nil` when the selected account cannot be watched.
     public static func alertsProfile(in state: State) -> ProfileID? {
-        guard let profile = state.selectedProfile, profile.kind.permits(.cloud) else {
+        guard let profile = state.selectedProfile, profile.kind.permits(.psnConsoles) else {
             return nil
         }
         return ProfileID(uuid: profile.id)

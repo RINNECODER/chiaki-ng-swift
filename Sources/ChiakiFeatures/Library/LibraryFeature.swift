@@ -69,7 +69,8 @@ import MenuFocus
         ///
         /// - Parameter section: The section shown first.
         public init(
-            section: LibrarySection = ProcessInfo.processInfo.arguments.contains("--show-cloud")
+            section: LibrarySection = CloudBuild.included
+                && ProcessInfo.processInfo.arguments.contains("--show-cloud")
                 ? .cloud
                 : .consoles
         ) {
@@ -476,7 +477,7 @@ import MenuFocus
     }
 
     private func followStatus(_ state: State) -> Effect<Action> {
-        guard let account = state.selectedAccount else {
+        guard CloudBuild.included, let account = state.selectedAccount else {
             return .send(.cloudStatus(.stop))
         }
         return .concatenate(.send(.cloudStatus(.select(account))), .send(.cloudStatus(.watch)))

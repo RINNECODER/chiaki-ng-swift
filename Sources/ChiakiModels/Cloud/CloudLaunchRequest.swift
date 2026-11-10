@@ -23,17 +23,23 @@ public struct CloudLaunchRequest: Equatable, Sendable {
     ///   - clearance: The catalog's clearance, if already obtained.
     ///   - joining: The game invitation to join once the stream plays, if any.
     /// - Throws: ``CloudPlaybackFailure/invalidTitle`` when the title cannot be launched in the cloud, or when
-    ///   it is a PS Cloud title and ``PS5CloudLaunchBuild/included`` is `false`.
+    ///   it is a PS Cloud title and ``PS5CloudLaunchBuild/included`` is `false`, when it is a PS Now title and
+    ///   ``PS4CloudLaunchBuild/included`` is `false`, and for every title when
+    ///   ``CloudBuild/included`` is `false`.
     public init(
         accountID: UUID,
         game: CloudGame,
         clearance: CloudLaunchClearanceToken? = nil,
         joining: CloudGameInvitation? = nil
     ) throws(CloudPlaybackFailure) {
-        guard ["psnow", "pscloud"].contains(game.streamServiceType), !game.productId.isEmpty else {
+        guard CloudBuild.included, ["psnow", "pscloud"].contains(game.streamServiceType),
+              !game.productId.isEmpty else {
             throw .invalidTitle
         }
         guard game.streamServiceType != "pscloud" || PS5CloudLaunchBuild.included else {
+            throw .invalidTitle
+        }
+        guard game.streamServiceType != "psnow" || PS4CloudLaunchBuild.included else {
             throw .invalidTitle
         }
         self.accountID = accountID

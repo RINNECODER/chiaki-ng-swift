@@ -31,8 +31,12 @@ struct PictureSettingsContainerView: View {
     var psnReach = PSNReach.signedIn
     @State private var streamKind = StreamKind.console
 
+    private var cloudShown: Bool {
+        psnReach == .signedIn && CloudBuild.included
+    }
+
     private var shownKind: StreamKind {
-        psnReach == .signedIn
+        cloudShown
             ? streamKind
             : .console
     }
@@ -42,7 +46,7 @@ struct PictureSettingsContainerView: View {
             HStack(alignment: .center) {
                 Text(.settingsPictureTitle).font(.title.weight(.semibold))
                 Spacer(minLength: 16)
-                if psnReach == .signedIn {
+                if cloudShown {
                     FocusableSegments(
                         options: StreamKind.allCases,
                         title: \.title,

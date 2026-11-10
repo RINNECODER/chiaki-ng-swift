@@ -87,13 +87,17 @@ struct SettingsPage: View {
             NatTypeSettingsView(store: store.scope(state: \.natType, action: \.natType))
             if store.psnReach == .signedIn {
                 #if DEBUG
-                    CloudLaunchSettingsView(store: store.scope(state: \.cloudLaunch, action: \.cloudLaunch))
+                    if CloudBuild.included {
+                        CloudLaunchSettingsView(store: store.scope(state: \.cloudLaunch, action: \.cloudLaunch))
+                    }
                 #endif
                 InternetConnectionSettingsView(
                     store: store.scope(state: \.internetConnection, action: \.internetConnection)
                 )
             } else {
-                Text(.settingsPanelSignInNote)
+                Text(CloudBuild.included
+                    ? LocalizedStringResource.settingsPanelSignInNote
+                    : .settingsPanelSignInNoteWithoutCloud)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }

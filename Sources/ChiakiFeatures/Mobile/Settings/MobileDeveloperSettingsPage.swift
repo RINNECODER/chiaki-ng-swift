@@ -47,7 +47,9 @@ struct MobileDeveloperSettingsPage: View {
                 sampleConsoleGroups
                 Group {
                     takionGroup
-                    libraryGroup
+                    if CloudBuild.included {
+                        libraryGroup
+                    }
                     SettingsPersistenceBanner(takion.setting, subject: .mobileDeveloperPersistenceSubject) {
                         takion.send(.retry)
                     }

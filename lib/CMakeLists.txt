@@ -79,6 +79,7 @@ endfunction()
 
 chiaki_bridge_test(chiaki-domains-test domains.cpp)
 set_target_properties(chiaki-domains-test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON)
+target_compile_definitions(chiaki-domains-test PRIVATE CHIAKI_CLOUD=$<BOOL:${LIBCHIAKING_CLOUD}>)
 target_include_directories(chiaki-domains-test PRIVATE bridge/include
     $<TARGET_PROPERTY:libchiaking::libchiaking,INTERFACE_INCLUDE_DIRECTORIES>)
 set_tests_properties(chiaki-domains-test PROPERTIES ENVIRONMENT "SDL_AUDIODRIVER=dummy")

@@ -138,13 +138,15 @@ public enum SettingsRoute: CaseIterable, Equatable, Hashable, Sendable {
         }
     }
 
-    /// Whether this build has what the tab configures: Remote players needs Kakusan.
+    /// Whether this build has what the tab configures: Remote players needs Kakusan, and Accessibility and
+    /// Entitlements need cloud streaming.
     public var isBuilt: Bool {
         switch self {
         case .remotePlayers:
             KakusanBuild.included
-        case .picture, .sound, .controls, .interface, .accessibility, .network, .developer, .entitlements,
-             .caches, .requests, .tokens, .about:
+        case .accessibility, .entitlements:
+            CloudBuild.included
+        case .picture, .sound, .controls, .interface, .network, .developer, .caches, .requests, .tokens, .about:
             true
         }
     }

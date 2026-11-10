@@ -14,7 +14,7 @@ import Testing
     #expect(state.tabs.contains(.remotePlayers) == KakusanBuild.included)
     state.psnReach = .signedIn
     #expect(state.tabs == SettingsRoute.allCases.filter(\.isBuilt))
-    #expect(state.tabs.contains(.accessibility))
+    #expect(state.tabs.contains(.accessibility) == CloudBuild.included)
 }
 
 @MainActor @Test func losingTheLastSignedInAccountLeavesAPSNOnlyTab() async {

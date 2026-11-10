@@ -467,8 +467,10 @@ int main() {
              .refusal() == CatalogRefusal::invalid_product);
   const auto unchecked = TitleChecksBridge::clear_for_launch(
       unhurried, known_account, title, note_check, &checks);
-  assert(!checks.empty() &&
-         checks.front() == libchiaking::catalog::LaunchCheck::loading_library);
+  assert(
+      checks.empty() == (CHIAKI_CLOUD == 0) &&
+      (checks.empty() ||
+       checks.front() == libchiaking::catalog::LaunchCheck::loading_library));
   assert(unchecked.kind() == chiaki_bridge::ClearanceOutcome::Kind::declined &&
          unchecked.decline().kind ==
              libchiaking::catalog::LaunchRefusal::Kind::check_unavailable);

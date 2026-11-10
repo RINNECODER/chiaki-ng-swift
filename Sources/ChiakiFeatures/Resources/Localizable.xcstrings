@@ -903,6 +903,17 @@
         }
       }
     },
+    "accounts.welcome.psnAccountHintWithoutCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with your phone or email. PSN features such as play outside your home network are enabled."
+          }
+        }
+      }
+    },
     "app.consoleEditor.deleteFailedMessage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9370,6 +9381,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cloud streaming, playing over the internet and their settings need an account signed in to PlayStation Network."
+          }
+        }
+      }
+    },
+    "mobile.network.signInNoteWithoutCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playing over the internet and its settings need an account signed in to PlayStation Network."
           }
         }
       }
@@ -24093,6 +24115,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cloud streaming, playing over the internet and their settings need an account signed in to PlayStation Network."
+          }
+        }
+      }
+    },
+    "settings.panel.signInNoteWithoutCloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playing over the internet and its settings need an account signed in to PlayStation Network."
           }
         }
       }

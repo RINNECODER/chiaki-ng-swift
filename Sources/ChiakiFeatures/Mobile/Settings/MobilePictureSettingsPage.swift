@@ -19,14 +19,18 @@ struct MobilePictureSettingsPage: View {
         self.settings = settings
     }
 
+    private var cloudShown: Bool {
+        settings.psnReach == .signedIn && CloudBuild.included
+    }
+
     private var shownKind: PictureSettingsContainerView.StreamKind {
-        settings.psnReach == .signedIn
+        cloudShown
             ? streamKind
             : .console
     }
 
     private var kind: Binding<PictureSettingsContainerView.StreamKind>? {
-        settings.psnReach == .signedIn
+        cloudShown
             ? $streamKind
             : nil
     }

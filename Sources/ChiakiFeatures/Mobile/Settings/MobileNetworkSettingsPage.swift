@@ -26,11 +26,15 @@ struct MobileNetworkSettingsPage: View {
         } trailing: {
             if settings.psnReach == .signedIn {
                 #if DEBUG
-                    cloudLaunch
+                    if CloudBuild.included {
+                        cloudLaunch
+                    }
                 #endif
                 internetConnection
             } else {
-                Text(.mobileNetworkSignInNote)
+                Text(CloudBuild.included
+                    ? LocalizedStringResource.mobileNetworkSignInNote
+                    : .mobileNetworkSignInNoteWithoutCloud)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
