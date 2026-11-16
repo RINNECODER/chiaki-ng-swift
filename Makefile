@@ -16,7 +16,7 @@ IOS_DEVICE ?=
 IOS_TARGETS ?= ChiakiCoreBridge ChiakiPersistence Video PlatformUI
 export CHIAKI_TAKION_VERSION CHIAKI_KAKUSAN CHIAKI_PS5_CLOUD_LAUNCH CHIAKI_PS4_CLOUD_LAUNCH CHIAKI_CLOUD
 
-.PHONY: help build core swift-build app run release notarize dmg mac-sandbox mac-pkg mac-testflight test test-swift test-core test-storage deps native-deps deps-github mirror-deps clean core-ios ios-build ios-app ios-run ios-device ios-ipa
+.PHONY: help build core swift-build app run release notarize dmg mac-sandbox mac-pkg mac-testflight test test-swift test-core test-storage deps native-deps deps-github mirror-deps clean core-ios ios-build ios-app ios-run ios-device ios-ipa ios-store-ipa ios-testflight
 
 help:
 	@printf '%s\n' \
@@ -38,6 +38,8 @@ help:
 	  'make ios-run         Build the simulator .app and launch it; IOS_DEVICE picks a simulator' \
 	  'make ios-device      Build, sign and install on a connected iPhone or iPad named by IOS_DEVICE' \
 	  'make ios-ipa         Build and sign a development .ipa in .build/ios' \
+	  'make ios-store-ipa   Build the iOS App Store .ipa in dist' \
+	  'make ios-testflight  Build the iOS App Store .ipa, validate it and upload it to App Store Connect' \
 	  'make test            Run all offline checks (includes loopback UDP)' \
   'make test HEADLESS=1 Skip tests that open windows, for machines without a window server' \
 	  'make test-swift      Run Swift client, storage, FSM and feature tests' \
@@ -101,6 +103,12 @@ ios-device:
 
 ios-ipa:
 	CHIAKI_PLATFORM=ios IOS_IPA=1 CONFIGURATION="$(CONFIGURATION)" SWIFT="$(SWIFT)" ./Scripts/run-ios.sh
+
+ios-store-ipa:
+	CHIAKI_VERSION_TAG="$(TAG)" SWIFT="$(SWIFT)" ./Scripts/app-store-ios.sh ipa
+
+ios-testflight:
+	CHIAKI_VERSION_TAG="$(TAG)" SWIFT="$(SWIFT)" ./Scripts/app-store-ios.sh upload
 
 app: core
 	CHIAKI_LAUNCH_APP=0 CONFIGURATION="$(CONFIGURATION)" SWIFT="$(SWIFT)" CHIAKI_VERSION_TAG="$(TAG)" ./Scripts/run-app.sh

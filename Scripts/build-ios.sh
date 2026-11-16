@@ -27,8 +27,14 @@ if [[ "${CHIAKI_SKIP_CORE:-0}" != 1 ]]; then
     "$project_dir/Scripts/build-core.sh"
 fi
 sdk_path="$(xcrun --sdk "$sdk_name" --show-sdk-path)"
-build=("$swift_command" build --package-path "$project_dir" --scratch-path "$project_dir/.build/$platform" \
-    --configuration "$configuration" --triple "$triple" --sdk "$sdk_path")
+scratch_path="$project_dir/.build/$platform"
+swift_flags=()
+if [[ "${CHIAKI_APP_STORE:-0}" == 1 ]]; then
+    scratch_path="$project_dir/.build/app-store-$platform"
+    swift_flags=(-Xswiftc -DCHIAKI_APP_STORE)
+fi
+build=("$swift_command" build --package-path "$project_dir" --scratch-path "$scratch_path" \
+    --configuration "$configuration" --triple "$triple" --sdk "$sdk_path" "${swift_flags[@]}")
 if (( $# == 0 )); then
     "${build[@]}"
 fi

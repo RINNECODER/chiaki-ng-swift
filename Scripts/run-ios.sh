@@ -25,12 +25,29 @@ case "$platform" in
         exit 1
         ;;
 esac
+app_store="${CHIAKI_APP_STORE:-0}"
+scratch_path="$project_dir/.build/$platform"
+swift_flags=()
+if [[ "$app_store" == 1 ]]; then
+    if [[ "$platform" != ios || "$configuration" != release ]]; then
+        echo 'CHIAKI_APP_STORE=1 needs CHIAKI_PLATFORM=ios and CONFIGURATION=release' >&2
+        exit 1
+    fi
+    bundle_id=io.github.chiaki-ng.chiaki-ng.appstore
+    scratch_path="$project_dir/.build/app-store-$platform"
+    swift_flags=(-Xswiftc -DCHIAKI_APP_STORE)
+fi
+version_tag="${CHIAKI_VERSION_TAG:-}"
+if [[ -n "$version_tag" && ! "$version_tag" =~ '^[A-Za-z0-9][A-Za-z0-9.-]*$' ]]; then
+    echo 'TAG may contain only letters, digits, dots and hyphens, and must start with a letter or digit' >&2
+    exit 1
+fi
 export CHIAKI_PLATFORM="$platform"
 "$project_dir/Scripts/build-ios.sh"
 sdk_path="$(xcrun --sdk "$sdk_name" --show-sdk-path)"
-bin_dir="$("$swift_command" build --package-path "$project_dir" --scratch-path "$project_dir/.build/$platform" \
-    --configuration "$configuration" --triple "$triple" --sdk "$sdk_path" --show-bin-path)"
-app_dir="$project_dir/.build/$platform/chiaki-ng.app"
+bin_dir="$("$swift_command" build --package-path "$project_dir" --scratch-path "$scratch_path" \
+    --configuration "$configuration" --triple "$triple" --sdk "$sdk_path" "${swift_flags[@]}" --show-bin-path)"
+app_dir="$scratch_path/chiaki-ng.app"
 rm -rf "$app_dir"
 mkdir -p "$app_dir/Frameworks"
 dependency_prefix="$(python3 "$project_dir/Tools/Dependencies/build.py" "--platform=$platform" --prefix)"
@@ -39,12 +56,13 @@ cp "$core_dir/libChiakiRegistration.dylib" "$core_dir/libChiakiInput.dylib" "$co
     "$app_dir/Frameworks/"
 cp "$bin_dir/ChiakiNG" "$app_dir/ChiakiNG"
 icon_source="$project_dir/Assets/Images/Branding/chiaking-color.png"
-icon_dir="$project_dir/.build/$platform/app-icon"
+icon_dir="$project_dir/.build/$platform/app-icon/${version_tag:-untagged}"
 if [[ ! -d "$icon_dir" || "$icon_source" -nt "$icon_dir" || "$project_dir/Tools/Packaging/app-icon.swift" -nt "$icon_dir" ]]; then
     rm -rf "$icon_dir"
-    swift "$project_dir/Tools/Packaging/app-icon.swift" --ios "$icon_source" "$icon_dir"
+    swift "$project_dir/Tools/Packaging/app-icon.swift" --ios "$icon_source" "$icon_dir" ${version_tag:+"$version_tag"}
 fi
 cp "$icon_dir"/AppIcon*.png "$app_dir/"
+cp "$project_dir/Tools/Packaging/PrivacyInfo.xcprivacy" "$app_dir/"
 for resource_bundle in "$bin_dir"/*.bundle; do
     ditto "$resource_bundle" "$app_dir/$(basename "$resource_bundle")"
 done
@@ -82,9 +100,12 @@ cat > "$app_dir/Info.plist" <<'PLIST'
 </array>
 <key>NSMicrophoneUsageDescription</key><string>Talk to other players through your PlayStation console while you stream.</string>
 <key>NSPhotoLibraryAddUsageDescription</key><string>Add the screenshots and video clips you take in PS5 cloud games to your Photos library.</string>
+<key>NSBluetoothAlwaysUsageDescription</key><string>Connect Bluetooth game controllers to play on your PlayStation console.</string>
+<key>NSCameraUsageDescription</key><string>chiaki-ng doesn't use the camera. The controller library it includes can reach the camera, so iOS asks for this text.</string>
 <key>NSLocalNetworkUsageDescription</key><string>Find your PlayStation consoles on local networks and configured discovery subnets.</string>
 <key>LSApplicationCategoryType</key><string>public.app-category.games</string>
 <key>LSSupportsGameMode</key><true/>
+<key>ITSAppUsesNonExemptEncryption</key><false/>
 <key>UTExportedTypeDeclarations</key><array><dict>
 <key>UTTypeIdentifier</key><string>io.github.chiaki-ng.kakusan</string>
 <key>UTTypeDescription</key><string>Kakusan invitation or reply</string>
@@ -117,6 +138,19 @@ if [[ "${CHIAKI_KAKUSAN:-0}" == 0 ]]; then
     /usr/libexec/PlistBuddy -c "Delete :UTExportedTypeDeclarations" -c "Delete :CFBundleDocumentTypes" \
         "$app_dir/Info.plist"
 fi
+if [[ "$app_store" == 1 ]]; then
+    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $(date -u +%y%m%d%H%M)" "$app_dir/Info.plist"
+fi
+if [[ -n "$version_tag" ]]; then
+    /usr/libexec/PlistBuddy -c "Add :ChiakiVersionTag string $version_tag" "$app_dir/Info.plist"
+fi
+commit="$(git -C "$project_dir" rev-parse --short=8 HEAD 2>/dev/null || true)"
+if [[ -n "$commit" ]] && ! git -C "$project_dir" diff --quiet HEAD -- 2>/dev/null; then
+    commit="$commit-modified"
+fi
+if [[ -n "$commit" ]]; then
+    /usr/libexec/PlistBuddy -c "Add :ChiakiCommit string $commit" "$app_dir/Info.plist"
+fi
 "$project_dir/Tools/Packaging/bundle-dylibs.sh" \
     "$app_dir" \
     "$app_dir/ChiakiNG" \
@@ -132,6 +166,10 @@ if [[ "$platform" == ios-simulator ]]; then
     else
         printf 'Built %s\n' "$app_dir"
     fi
+    exit 0
+fi
+if [[ "$app_store" == 1 ]]; then
+    printf 'Built the unsigned App Store app %s\n' "$app_dir"
     exit 0
 fi
 identity="${IOS_SIGN_IDENTITY:-Apple Development}"
