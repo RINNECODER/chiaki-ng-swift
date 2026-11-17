@@ -34,7 +34,7 @@ let ps5CloudLaunch: [SwiftSetting] = ps5CloudLaunchIncluded
     ? [.define("CHIAKI_PS5_CLOUD_LAUNCH")]
     : []
 
-let ps4CloudLaunchSwitch = ProcessInfo.processInfo.environment["CHIAKI_PS4_CLOUD_LAUNCH"] ?? "1"
+let ps4CloudLaunchSwitch = ProcessInfo.processInfo.environment["CHIAKI_PS4_CLOUD_LAUNCH"] ?? "0"
 
 guard let ps4CloudLaunchIncluded = ["1": true, "0": false][ps4CloudLaunchSwitch] else {
     fatalError("CHIAKI_PS4_CLOUD_LAUNCH must be 1 or 0")
@@ -44,7 +44,7 @@ let ps4CloudLaunch: [SwiftSetting] = ps4CloudLaunchIncluded
     ? [.define("CHIAKI_PS4_CLOUD_LAUNCH")]
     : []
 
-let cloudSwitch = ProcessInfo.processInfo.environment["CHIAKI_CLOUD"] ?? "1"
+let cloudSwitch = ProcessInfo.processInfo.environment["CHIAKI_CLOUD"] ?? "0"
 
 guard let cloudIncluded = ["1": true, "0": false][cloudSwitch] else {
     fatalError("CHIAKI_CLOUD must be 1 or 0")

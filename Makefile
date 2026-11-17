@@ -9,8 +9,8 @@ HEADLESS ?=
 CHIAKI_TAKION_VERSION ?= 0
 CHIAKI_KAKUSAN ?= 0
 CHIAKI_PS5_CLOUD_LAUNCH ?= 0
-CHIAKI_PS4_CLOUD_LAUNCH ?= 1
-CHIAKI_CLOUD ?= 1
+CHIAKI_PS4_CLOUD_LAUNCH ?= 0
+CHIAKI_CLOUD ?= 0
 IOS_PLATFORM ?= ios-simulator
 IOS_DEVICE ?=
 IOS_TARGETS ?= ChiakiCoreBridge ChiakiPersistence Video PlatformUI
@@ -72,8 +72,8 @@ help:
 	  'Options: CONFIGURATION=debug|release SWIFT=swift PYTHON=python3 TAG=name HEADLESS=1 DEPS_DATE=ddmmyy' \
 	  '         CHIAKI_KAKUSAN=1|0 builds Kakusan session sharing (default 0); 0 leaves it out of the core and app' \
 	  '         CHIAKI_PS5_CLOUD_LAUNCH=1|0 allows PS Cloud launches (default 0); 0 refuses them in the core and app, PS Now still launches' \
-	  '         CHIAKI_PS4_CLOUD_LAUNCH=1|0 allows PS Now launches (default 1); 0 refuses them in the core and app, PS Cloud still launches' \
-	  '         CHIAKI_CLOUD=1|0 builds cloud streaming, PS Now and PS Cloud (default 1); 0 hides every cloud page and option and leaves cloud out of the core' \
+	  '         CHIAKI_PS4_CLOUD_LAUNCH=1|0 allows PS Now launches (default 0); 0 refuses them in the core and app, PS Cloud still launches' \
+	  '         CHIAKI_CLOUD=1|0 builds cloud streaming, PS Now and PS Cloud (default 0); 0 hides every cloud page and option and leaves cloud out of the core' \
 	  '         IOS_PLATFORM=ios-simulator|ios IOS_TARGETS="ChiakiCoreBridge ChiakiPersistence Video PlatformUI"'
 
 build: core swift-build

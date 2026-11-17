@@ -18,7 +18,7 @@ case "${CHIAKI_PS5_CLOUD_LAUNCH:-0}" in
         exit 1
         ;;
 esac
-case "${CHIAKI_PS4_CLOUD_LAUNCH:-1}" in
+case "${CHIAKI_PS4_CLOUD_LAUNCH:-0}" in
     1) ps4_cloud_launch=ON ;;
     0) ps4_cloud_launch=OFF ;;
     *)
@@ -26,7 +26,7 @@ case "${CHIAKI_PS4_CLOUD_LAUNCH:-1}" in
         exit 1
         ;;
 esac
-case "${CHIAKI_CLOUD:-1}" in
+case "${CHIAKI_CLOUD:-0}" in
     1) cloud=ON ;;
     0) cloud=OFF ;;
     *)
