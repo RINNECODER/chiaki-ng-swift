@@ -134,7 +134,11 @@ mac-pkg: core
 mac-testflight: core
 	CHIAKI_VERSION_TAG="$(TAG)" SWIFT="$(SWIFT)" ./Scripts/app-store.sh upload
 
-test: check-core-notes test-core test-swift test-storage test-video-metadata test-video-state
+test: check-core-notes test-core test-swift test-storage test-video-metadata test-video-state test-steady-wifi
+
+.PHONY: test-steady-wifi
+test-steady-wifi:
+	$(PYTHON) -B Tests/Native/steady-wifi.py
 
 test-core: core
 

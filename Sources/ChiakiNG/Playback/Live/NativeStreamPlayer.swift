@@ -31,6 +31,9 @@ final class NativeStreamPlayer: StreamPlayer {
     private var spatialAudio = SpatialAudio()
     private var audio3DAvailable = false
     private var outputRoute: AudioOutputWatcher?
+    #if os(macOS) && !CHIAKI_APP_STORE
+        private var steadyWiFi: SteadyWiFiSession?
+    #endif
     #if os(iOS)
         private var backgroundPause: BackgroundVideoPause?
     #endif
@@ -149,7 +152,16 @@ final class NativeStreamPlayer: StreamPlayer {
     }
 
     private func connectSession(_ deliver: @escaping (PlayerSignal?) -> Void) {
-        native.firstFramePresentedHandler = {
+        native.firstFramePresentedHandler = { [weak self] in
+            #if os(macOS) && !CHIAKI_APP_STORE
+                MainActor.assumeIsolated {
+                    if let self, self.steadyWiFi == nil,
+                       UserDefaults.standard.bool(forKey: SteadyWiFiPreference.key),
+                       SteadyWiFiPreference.isHelperInstalled {
+                        self.steadyWiFi = SteadyWiFiSession()
+                    }
+                }
+            #endif
             deliver(.event(.firstFrame))
         }
         native.displayProhibitedHandler = { prohibited in
@@ -227,6 +239,10 @@ final class NativeStreamPlayer: StreamPlayer {
     /// Drops every handler, stops following the audio output device and, on iOS, stops pausing video in the
     /// background.
     func disconnect() {
+        #if os(macOS) && !CHIAKI_APP_STORE
+            steadyWiFi?.stop()
+            steadyWiFi = nil
+        #endif
         native.firstFramePresentedHandler = nil
         native.displayProhibitedHandler = nil
         native.connectionWaitingHandler = nil

@@ -400,6 +400,12 @@ private struct SettingsFocusDriver {
             networkFocus.wrappedValue = .subnets
         case (.subnets, .up):
             networkFocus.wrappedValue = .sweep
+        #if os(macOS) && !CHIAKI_APP_STORE
+        case (.subnets, .down) where SteadyWiFiPreference.isHelperInstalled:
+            networkFocus.wrappedValue = .steadyWiFi
+        case (.steadyWiFi, .up):
+            networkFocus.wrappedValue = .subnets
+        #endif
         case (.sweep, .up):
             networkFocus.wrappedValue = nil
             focusedTab.wrappedValue = store.route
