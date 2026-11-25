@@ -93,6 +93,9 @@ public struct NetworkSettingsView: View {
     @Bindable public var store: StoreOf<NetworkSettingsFeature>
     /// Which discovery control has controller focus.
     @MenuFocusState.Binding var focus: NetworkSettingsFocus?
+    #if os(macOS) && !CHIAKI_APP_STORE
+        @AppStorage(SteadyWiFiPreference.key) private var steadyWiFi = false
+    #endif
 
     /// Creates a network settings view.
     ///
@@ -106,6 +109,27 @@ public struct NetworkSettingsView: View {
     }
 
     public var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            discovery
+            #if os(macOS) && !CHIAKI_APP_STORE
+                Divider()
+                Toggle("Steady Wi-Fi", isOn: $steadyWiFi)
+                    .menuFocusBinding($focus, equals: .steadyWiFi)
+                    .disabled(!SteadyWiFiPreference.isHelperInstalled)
+                Text("Pauses AirDrop and nearby Continuity features during Wi-Fi streams. Restores them when the stream ends. Applies to the next stream.")
+                    .font(.caption).foregroundStyle(.secondary)
+                if !SteadyWiFiPreference.isHelperInstalled {
+                    Text("Install the Steady Wi-Fi helper from the project checkout to enable this setting.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            #endif
+        }
+        .onAppear {
+            store.send(.appeared)
+        }
+    }
+
+    private var discovery: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(.settingsNetworkDiscoveryHeading).font(.headline)
             Text(.settingsNetworkDiscoveryDetail)
@@ -147,9 +171,6 @@ public struct NetworkSettingsView: View {
             }
         }
         .disabled(loadFailed)
-        .onAppear {
-            store.send(.appeared)
-        }
     }
 
     private var loadFailed: Bool {

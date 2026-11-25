@@ -5,4 +5,6 @@ public enum NetworkSettingsFocus: Hashable, Sendable {
 
     /// The subnets text field.
     case subnets
+    /// The macOS toggle for pausing AWDL while streaming over Wi-Fi.
+    case steadyWiFi
 }

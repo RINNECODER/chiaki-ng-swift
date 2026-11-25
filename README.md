@@ -12,6 +12,12 @@
 - Homebrew
 - Git SSH access to the core submodule's repository (see `.gitmodules`)
 
+## Steady Wi-Fi
+
+On a local macOS build, run `sudo ./Scripts/steady-wifi.sh install` once, then enable **Settings → Network → Steady Wi-Fi** before starting a stream. This temporarily pauses AirDrop and nearby Continuity features over Wi-Fi. Chiaki restores the interface it paused when the stream ends or the app exits.
+
+Run `sudo ./Scripts/steady-wifi.sh uninstall` after ending the stream to remove the helper. The Wi-Fi option was inspired by [Mirage for PXPlay](https://github.com/d00d1k/mirage-for-pxplay).
+
 ## License
 
 chiaki-ng is licensed under the GNU Affero General Public Licenseersion 3 or (at your option) any later version, with additional permissions for linking with OpenSSL and for distribution through application stores such as the Apple App Store. See [LICENSE](LICENSE).
